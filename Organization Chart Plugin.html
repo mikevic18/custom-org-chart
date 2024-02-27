@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>Organization Chart Plugin</title>
+  <link rel="stylesheet" href="./Organization Chart Plugin_files/jquery.orgchart.css">
+  <link rel="stylesheet" href="./Organization Chart Plugin_files/style.css">
+  <style type="text/css">
+    #chart-container { display: inline-block; }
+    .add-child-btn { cursor: pointer; margin-right:15px }
+    .edit-node-btn {
+        cursor: pointer;
+    margin-left: 15px; /* Add spacing to the left of the edit button */
+}
+    .hidden { display: none; }
+    .node .title { background-color: #FFFFFF; } /* Change background color of node title */
+    .orgchart .edge { stroke: #5bc0de; } /* Change color of connecting lines */
+  </style>
+</head>
+<body>
+  <div id="chart-container"></div>
+  <div id="options">
+    <button id="save-btn">Save</button>
+  <button id="toggle-btn">Toggle Buttons</button>
+<input type="text" id="color-input" placeholder="Enter hex color code">
+  <button id="apply-color-btn">Apply Color</button>
+</div>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="./Organization Chart Plugin_files/jquery.orgchart.js"></script>
+<script type="text/javascript">
+$(function() {
+    var ds = {
+        'name': 'Adam',
+        'title': 'general manager',
+        'children': [
+        ]
+    };
+
+    var oc;
+
+    function createAddButton(node, data) {
+        var $addBtn = $('<span class="add-child-btn">+</span>');
+        $addBtn.click(function() {
+            var name = prompt("Enter the name of the employee:");
+            var position = prompt("Enter the position of the employee:");
+            if (name && position) {
+                var newNode = { 'name': name, 'title': position };
+                if (!data.children) {
+                    data.children = [];
+                }
+                data.children.push(newNode);
+                oc.init({ 'data': ds, 'nodeContent': 'title' }); // Reinitialize the chart with updated data
+            }
+        });
+        node.append($addBtn);
+    }
+
+ function createEditButton(node, data) {
+        var $editBtn = $('<span class="edit-node-btn">Edit</span>');
+        $editBtn.click(function() {
+            var newName = prompt("Enter the new name:", data.name);
+            var newTitle = prompt("Enter the new title:", data.title);
+            if (newName !== null && newTitle !== null) {
+                data.name = newName;
+                data.title = newTitle;
+                oc.init({ 'data': ds, 'nodeContent': 'title' }); // Reinitialize the chart with updated data
+            }
+        });
+        node.append($editBtn);
+    }
+
+    oc = $('#chart-container').orgchart({
+        'data' : ds,
+        'nodeContent': 'title',
+        'createNode': function(node, data) {
+            createAddButton(node, data);
+                        createEditButton(node, data);
+
+        }
+    });
+
+    $('#save-btn').click(function() {
+        // Output the current data to the console
+        console.log(ds);
+        // You can perform further actions here, like sending the data to a server or saving it locally
+        alert("Current data has been saved!");
+    });
+        $('#toggle-btn').click(function() {
+        $('.add-child-btn').toggleClass('hidden');
+         $('.edit-node-btn').toggleClass('hidden');
+    });
+            $('#apply-color-btn').click(function() {
+        var color = $('#color-input').val();
+          document.documentElement.style.setProperty('--primary-color', color);
+
+    });
+});
+
+  </script>
+</body></html>
